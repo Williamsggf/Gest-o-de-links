@@ -2,7 +2,7 @@
   "expo": {
     "name": "links",
     "slug": "links",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -36,6 +36,12 @@
       "eas": {
         "projectId": "400ddbf0-25fc-4d8b-a2da-44078395596b"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/400ddbf0-25fc-4d8b-a2da-44078395596b"
     }
   }
 }

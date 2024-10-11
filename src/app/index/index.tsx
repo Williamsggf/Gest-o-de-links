@@ -1,36 +1,43 @@
-import { useCallback, useState } from "react"
-import { Text, View, Image, TouchableOpacity, FlatList, Modal, Alert } from "react-native"
-import { styles } from "./styles"
-import { MaterialIcons } from "@expo/vector-icons"
-import { colors } from "@/styles/colors"
-import { Categories } from "@/components/Categories/intex"
-import { categories } from "@/utils/caregories"
-import { Link } from "@/components/link"
-import { Option } from "@/components/Option"
-import { router, useFocusEffect } from "expo-router"
-import { LinksSorage, linksStorage } from "@/storage/link-storage"
-
+import { useCallback, useState } from "react";
+import { Text, View, Image, TouchableOpacity, FlatList, Modal, Alert } from "react-native";
+import { styles } from "./styles";
+import { MaterialIcons } from "@expo/vector-icons";
+import { colors } from "@/styles/colors";
+import { Categories } from "@/components/Categories"; // Verifique se este caminho está correto.
+import { categories } from "@/utils/caregories";
+import { Link } from "@/components/link";
+import { Option } from "@/components/Option";
+import { router, useFocusEffect } from "expo-router";
+import { LinksSorage, linksStorage } from "@/storage/link-storage"; // Corrigir nome para LinksSorage
 
 export default function Index() {
-    const [links, setLinks] = useState<LinksSorage[]>([])
-    const [category, setCategory] = useState(categories[0].name)
+    const [showModal, setShowModal] = useState(false);
+    const [link, setLink] = useState<LinksSorage>({} as LinksSorage);
+    const [links, setLinks] = useState<LinksSorage[]>([]);
+    const [category, setCategory] = useState(categories[0].name);
 
     async function getLinks() {
         try {
-            const response = await linksStorage.get()
-            setLinks(response)
+            const response = await linksStorage.get();
 
+            const filtered = response.filter((link: LinksSorage) => link.category === category);
+
+            setLinks(filtered);
         } catch (error) {
-            Alert.alert("Erro", "Não foi possível listar os links")
-
+            Alert.alert("Erro", "Não foi possível listar os links");
         }
+    }
 
-    } useFocusEffect(
+    function handleDetails(selected: LinksSorage) {
+        setShowModal(true);
+        setLink(selected);
+    }
+
+    useFocusEffect(
         useCallback(() => {
-            getLinks()
+            getLinks();
         }, [category])
-    )
-
+    );
 
     return (
         <View style={styles.container}>
@@ -47,11 +54,11 @@ export default function Index() {
             <FlatList
                 data={links}
                 keyExtractor={item => item.id}
-                renderItem={(item) => (
+                renderItem={({ item }) => ( // Corrigido o uso correto de 'item'
                     <Link
-                        name={item.item.name}
-                        url={item.item.url}
-                        onDetails={() => console.log("Clicou!")}
+                        name={item.name}
+                        url={item.url}
+                        onDetails={() => handleDetails(item)}
                     />
                 )}
                 style={styles.links}
@@ -59,29 +66,24 @@ export default function Index() {
                 showsVerticalScrollIndicator={false}
             />
 
-            <Modal transparent visible={false}>
+            <Modal transparent visible={showModal} animationType="slide">
                 <View style={styles.modal}>
                     <View style={styles.modalContent}>
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalCategory}>Curso</Text>
-                            <MaterialIcons name="close" size={24} color={colors.gray[400]} />
-
+                            <Text style={styles.modalCategory}>{link.category}</Text>
+                            <MaterialIcons name="close" size={24} color={colors.gray[400]} onPress={() => setShowModal(false)} />
                         </View>
 
-                        <Text style={styles.modalLinksName}>Rocketseat</Text>
-                        <Text style={styles.modalUrl}>https://rocketseat.com.br</Text>
+                        <Text style={styles.modalLinksName}>{link.name}</Text>
+                        <Text style={styles.modalUrl}>{link.url}</Text>
 
                         <View style={styles.modalFooter}>
                             <Option name="Excluir" icon="delete" variant="secondary" />
                             <Option name="Abrir" icon="language" />
                         </View>
-
                     </View>
-
                 </View>
-
             </Modal>
-
         </View>
-    )
+    );
 }

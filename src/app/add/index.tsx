@@ -5,7 +5,7 @@ import { styles } from "./styles";
 import { colors } from "@/styles/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Categories } from "@/components/Categories/intex";
+import { Categories } from "@/components/Categories";
 import { Input } from "@/components/input";
 import { Button } from "@/components/button";
 import { linksStorage } from "@/storage/link-storage";
@@ -31,7 +31,7 @@ export default function Add() {
 
             await linksStorage.save({ id: Date.now().toString(), name, url, category })
 
-            Alert.alert("Sucesso", "Link adicionado com sucesso")
+            Alert.alert("Sucesso", "Link adicionado com sucesso" , [{text: "OK", onPress: () => router.back()}])
 
         } catch (error) {
             Alert.alert("Erro", "Não foi possível salvar o link")
